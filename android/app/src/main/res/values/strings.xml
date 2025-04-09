@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">Woosim Samples</string>
+    <string name="menu_search_device">Device Search</string>
+    <string name="menu_disconnect">Disconnect</string>
+
+    <string name="toast_bt_na">Bluetooth is not available</string>
+    <string name="bt_not_enabled">Bluetooth was not enabled</string>
+    <string name="permission_denied">Permission is denied</string>
+    <string name="connect_fail">Unable to connect device</string>
+    <string name="connect_lost">Device connection was lost</string>
+    <string name="connect">Connect a device</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="select_device">select a device to connect</string>
+    <string name="none_found">No devices found</string>
+    <string name="not_connected">You are not connected to a device</string>
+    <string name="warn_timeout">Connection is not available.\nData sending is cancelled.</string>
+
+    <!-- SignPad Activity -->
+    <string name="title_sign_pad">SignPad</string>
+    <string name="signature">Write Signature</string>
+    <string name="print">Print</string>
+    <string name="clear">Clear</string>
+
+    <!-- MultiLanguage Activity -->
+    <string name="title_multi_language">Multi-Language (RX only)</string>
+    <string name="ml_info">For more detailed information about code table, please refer to "ESC t" command in Woosim command manual.</string>
+    <string name="ml_info2">Korean and Chinese text cannot be printed properly on one printer because of font set limitation.</string>
+    <string name="ml_greek">Greek</string>
+    <string name="ml_latin9">Latin9</string>
+    <string name="ml_russian">Russian</string>
+    <string name="ml_hebrew">Hebrew</string>
+    <string name="ml_hangul">Korean</string>
+    <string name="ml_chinese">Chinese(GB18030)</string>
+
+    <!-- Example Activity -->
+    <string name="title_example">Examples</string>
+    <string name="page_mode">Page mode printing</string>
+    <string name="pm_line">Line</string>
+    <string name="pm_box">Box</string>
+    <string name="pm_ellipse">Ellipse</string>
+    <string name="pm_direction">Direction</string>
+    <string name="pm_label">Barcode Label</string>
+    <string name="pm_image">Image and Text</string>
+    <string name="pdf">PDF printing</string>
+    <string name="pdf_file">PDF File</string>
+    <string name="warn_unmount">Storage is not mounted.</string>
+</resources>

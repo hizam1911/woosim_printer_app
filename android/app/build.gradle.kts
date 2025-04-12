@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.woosim_printer_flutter"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -32,9 +32,10 @@ android {
 
     repositories {
         flatDir {
-            dirs 'libs'
+            dirs("libs")
         }
     }
+
 
     buildTypes {
         release {
@@ -47,7 +48,9 @@ android {
 
 dependencies {
     // woosim sdk
-    implementation files('libs/WoosimLib262.jar')
+    implementation(files("libs/WoosimLib262.jar"))
+    // OkHttp to simplify redirects, timeouts, and encoding for file downloading
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
 
 flutter {

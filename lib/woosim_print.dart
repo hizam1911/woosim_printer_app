@@ -20,7 +20,7 @@ class _WoosimPrintState extends State<WoosimPrint> {
   String statusConnection = "DISCONNECTED"; // new one with handler
   String connectedDevice = "";
   String printStatus = "No print job";
-  String pdfUrl = ""; // replace with a real pdf url
+  String pdfUrl = "https://export-download.canva.com/118_8/DAGkMT118_8/4/0-6558828962822299202.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQYCGKMUH5AO7UJ26%2F20250409%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250409T201900Z&X-Amz-Expires=26583&X-Amz-Signature=9c7fa407cd9eeda2b3305ad86d5dc24fe49e94afb095e3de68d510d1e59c19ce&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%2A%3DUTF-8%27%27Test%2520Print%2520PDF.pdf&response-expires=Thu%2C%2010%20Apr%202025%2003%3A42%3A03%20GMT"; // replace with a real pdf url
   static const platform = MethodChannel("bluetooth_channel");
 
   @override
@@ -207,96 +207,101 @@ class _WoosimPrintState extends State<WoosimPrint> {
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back_sharp, color: Colors.black,)
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0, // Remove shadow
+          title: Text(
+            "Woosim Printing Page".toUpperCase(),
+            style: textTheme.titleMedium!.copyWith(color: Colors.black),
+          ),
+          centerTitle: true,
         ),
-        elevation: 0, // Remove shadow
-        title: Text(
-          "Woosim Printing Page".toUpperCase(),
-          style: textTheme.titleMedium!.copyWith(color: Colors.black),
-        ),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Divider(
-                color: Colors.black,
-                height: 1,
-                thickness: 2,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Divider(
+                  color: Colors.black,
+                  height: 1,
+                  thickness: 2,
+                ),
               ),
-            ),
-            if (statusConnection == "DISCONNECTED" || statusConnection == "FAILED")
-              ElevatedButton(
-                onPressed: _scanForDevices,
-                child: Text("Search for Devices"),
+              if (statusConnection == "DISCONNECTED" || statusConnection == "FAILED")
+                ElevatedButton(
+                  onPressed: _scanForDevices,
+                  child: Text("Search for Devices"),
+                ),
+              if (statusConnection == "CONNECTED" || statusConnection == "ALREADY_CONNECTED") // Show disconnect button only if connected
+                ElevatedButton(
+                  onPressed: _disconnectDevice,
+                  child: Text("Disconnect"),
+                ),
+              SizedBox(height: 20),
+              // Text("Status: $connectionStatus", style: TextStyle(fontSize: 16)),
+              Text("Status: $statusConnection", style: TextStyle(fontSize: 16)),
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Divider(
+                  color: Colors.black,
+                  height: 1,
+                  thickness: 2,
+                ),
               ),
-            SizedBox(height: 20),
-            // Text("Status: $connectionStatus", style: TextStyle(fontSize: 16)),
-            Text("Status: $statusConnection", style: TextStyle(fontSize: 16)),
-            if (statusConnection == "CONNECTED" || statusConnection == "ALREADY_CONNECTED") // Show disconnect button only if connected
-              ElevatedButton(
-                onPressed: _disconnectDevice,
-                child: Text("Disconnect"),
+              Visibility(
+                visible: (statusConnection == "CONNECTED" || statusConnection == "ALREADY_CONNECTED") ? true : false,
+                child: Column(
+                  children: [
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: _printPDF,
+                        child: Text("Download & Print PDF"),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Divider(
+                        color: Colors.black,
+                        height: 1,
+                        thickness: 2,
+                      ),
+                    ),
+                    Text("Status: $printStatus", style: TextStyle(fontSize: 16)),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: _selectAndPrintPDF,
+                        child: Text("Select & Print PDF"),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Divider(
+                        color: Colors.black,
+                        height: 1,
+                        thickness: 2,
+                      ),
+                    ),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          String result = await bps.WoosimService.sendTestPrint();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(result)),
+                          );
+                        },
+                        child: Text("Print Test Page"),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Divider(
-                color: Colors.black,
-                height: 1,
-                thickness: 2,
-              ),
-            ),
-            Center(
-              child: ElevatedButton(
-                onPressed: _printPDF,
-                child: Text("Download & Print PDF"),
-              ),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Divider(
-                color: Colors.black,
-                height: 1,
-                thickness: 2,
-              ),
-            ),
-            Text("Status: $printStatus", style: TextStyle(fontSize: 16)),
-            Center(
-              child: ElevatedButton(
-                onPressed: _selectAndPrintPDF,
-                child: Text("Select & Print PDF"),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Divider(
-                color: Colors.black,
-                height: 1,
-                thickness: 2,
-              ),
-            ),
-            Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  String result = await bps.WoosimService.sendTestPrint();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(result)),
-                  );
-                },
-                child: Text("Print Test Page"),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

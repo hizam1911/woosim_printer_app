@@ -90,7 +90,4 @@ class WoosimService {
       return "Printing failed";
     }
   }
-
-
-
 }

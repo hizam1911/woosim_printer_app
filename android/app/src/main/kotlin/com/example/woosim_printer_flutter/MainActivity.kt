@@ -32,6 +32,8 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.ArrayList
+import okhttp3.OkHttpClient
+import okhttp3.Request
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL_APK = "com.example.woosim_printer_flutter/apk_uri"
@@ -244,6 +246,7 @@ class MainActivity : FlutterActivity() {
     private fun disconnectDevice(): Boolean {
         return try {
             mPrintService?.stop()
+            MethodChannelManager.sendStatusToFlutter("DISCONNECTED") // ✅ Notify Flutter
             true
         } catch (e: IOException) {
             Log.e(TAG, "Disconnection failed: ${e.message}")
@@ -268,26 +271,27 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun downloadPDF(fileUrl: String): File? {
-        return try {
-            val url = URL(fileUrl)
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.connect()
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(fileUrl)
+            .build()
 
-            if (connection.responseCode != HttpURLConnection.HTTP_OK) return null
-
-            val file = File(cacheDir, "downloaded.pdf")
-            FileOutputStream(file).use { outputStream ->
-                connection.inputStream.use { input ->
-                    input.copyTo(outputStream)
+        return client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                Log.e("Bluetooth", "HTTP error: ${response.code}")
+                null
+            } else {
+                val file = File(cacheDir, "downloaded.pdf")
+                response.body?.byteStream()?.use { input ->
+                    FileOutputStream(file).use { output ->
+                        input.copyTo(output)
+                    }
                 }
+                file
             }
-            file
-        } catch (e: Exception) {
-            Log.e("Bluetooth", "Error downloading PDF: ${e.message}")
-            null
         }
     }
+
 
     private fun printPDF(pdfFile: File) {
         try {
